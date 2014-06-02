@@ -10,8 +10,8 @@ Gem::Specification.new do |spec|
   spec.version       = SocketIO::Emitter::VERSION
   spec.authors       = ["nulltask"]
   spec.email         = ["nulltask@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
   spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{Ruby Socket.IO emitter implementation.}
   spec.homepage      = "https://github.com/nulltask/socket.io-ruby-emitter"
   spec.license       = "MIT"
 
