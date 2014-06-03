@@ -27,7 +27,7 @@ module SocketIO
     end
 
     def in(room)
-      @rooms << room unless @rooms.includes?(room)
+      @rooms << room unless @rooms.include?(room)
       self
     end
 
