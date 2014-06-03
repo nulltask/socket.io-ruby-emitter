@@ -20,7 +20,7 @@ module SocketIO
     def method_missing(name)
       match = /(?<flag>\S+)\?$/.match(name)
       unless match.nil?
-        return !!@flags[:flag]
+        return !!@flags[match[:flag].to_sym]
       end
       @flags[name.to_sym] = true
       self
