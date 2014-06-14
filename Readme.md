@@ -1,7 +1,16 @@
 
 # SocketIO::Emitter
 
-TODO: Write a gem description
+A Ruby implementation of [socket.io-emitter](https://github.com/Automattic/socket.io-emitter).
+
+## How to use
+
+```ruby
+require 'socket.io-emitter'
+
+emitter = SocketIO::Emitter.new
+emitter.emit('time', DateTime.now.to_s)
+```
 
 ## Installation
 
@@ -17,17 +26,26 @@ Or install it yourself as:
 
     $ gem install socket.io-emitter
 
-## Usage
+## API
 
-TODO: Write usage instructions here
+### Emitter.new([opts])
 
-## Contributing
+The following options are allowed:
 
-1. Fork it ( https://github.com/[my-github-username]/socket.io-ruby-emitter/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+- key: the name of the key to pub/sub events on as prefix (`socket.io`)
+- redis: the Instance of [Redis](https://github.com/redis/redis-rb) (`redis://127.0.0.1:6379/0`)
+
+### Emitter#to(room)
+
+Specifies a specific room that you want to emit to.
+
+### Emitter#in(room)
+
+_Alias of `Emitter#to`._
+
+### Emitter#of(namespace)
+
+Specifies a specific namespace that you want to emit to.
 
 ## License
 
