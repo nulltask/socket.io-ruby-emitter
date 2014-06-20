@@ -21,3 +21,6 @@ tmp
 *.a
 mkmf.log
 vendor/bundle
+
+spec/node_modules
+spec/redis.log

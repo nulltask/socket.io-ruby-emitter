@@ -1,0 +1,16 @@
+{
+  "name": "socket.io-ruby-emitter-test",
+  "version": "0.0.0",
+  "description": "test server",
+  "main": "testapp.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "joker1007",
+  "license": "MIT",
+  "dependencies": {
+    "socket.io": "^1.0.6",
+    "socket.io-redis": "^0.1.3",
+    "socket.io-client": "~1.0.6"
+  }
+}

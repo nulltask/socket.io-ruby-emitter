@@ -57,13 +57,13 @@ module SocketIO
 
       self
     end
-  end
 
-  private
+    private
 
-  def has_binary?(args)
-    args.select {|x| x.is_a?(String)}.any? {|str|
-      str.encoding == ASCII_8BIT && !str.ascii_only?
-    }
+    def has_binary?(args)
+      args.select {|x| x.is_a?(String)}.any? {|str|
+        str.encoding == Encoding::ASCII_8BIT && !str.ascii_only?
+      }
+    end
   end
 end
