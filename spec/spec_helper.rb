@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 
 pwd = File.expand_path('..', __FILE__)
-require 'socket.io/emitter'
+require 'socket.io-emitter'
 
 RSpec.configure do |config|
   config.before(:suite) do

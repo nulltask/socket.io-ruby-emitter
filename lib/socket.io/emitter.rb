@@ -1,4 +1,3 @@
-
 require 'socket.io/emitter/version'
 require 'msgpack'
 require 'redis'
