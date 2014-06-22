@@ -1,4 +1,3 @@
-
 require 'socket.io/emitter/version'
 require 'msgpack'
 require 'redis'
@@ -10,6 +9,8 @@ module SocketIO
       BINARY_EVENT = 5
     end
 
+    FLAGS = %w(json volatile broadcast)
+
     def initialize(options = {})
       @redis = options[:redis] || Redis.new
       @key = "#{options[:key] || 'socket.io'}#emitter";
@@ -17,23 +18,18 @@ module SocketIO
       @flags = {}
     end
 
-    def method_missing(name)
-      match = /(?<flag>\S+)\?$/.match(name)
-      unless match.nil?
-        return !!@flags[match[:flag].to_sym]
+    FLAGS.each do |flag|
+      define_method(flag) do
+        @flags[flag.to_sym] = true
+        self
       end
-      @flags[name.to_sym] = true
-      self
     end
 
     def in(room)
       @rooms << room unless @rooms.include?(room)
       self
     end
-
-    def to(room)
-      self.in(room)
-    end
+    alias :to :in
 
     def of(nsp)
       @flags[:nsp] = nsp
@@ -41,21 +37,11 @@ module SocketIO
     end
 
     def emit(*args)
-      data = []
       packet = {}
-      packet[:type] = Type::EVENT
+      packet[:type] = has_binary?(args) ? Type::BINARY_EVENT : Type::EVENT
+      packet[:data] = args
 
-      args.each do |arg|
-        data << arg.to_s
-      end
-
-      if self.binary?
-        packet[:type] = Type::BINARY_EVENT
-      end
-
-      packet[:data] = data
-
-      unless @flags[:nsp].nil?
+      if @flags.has_key?(:nsp)
         packet[:nsp] = @flags[:nsp]
         @flags.delete(:nsp)
       else
@@ -65,10 +51,18 @@ module SocketIO
       packed = MessagePack.pack([packet, { rooms: @rooms, flags: @flags }])
       @redis.publish(@key, packed)
 
-      @rooms = []
-      @flags = {}
+      @rooms.clear
+      @flags.clear
 
       self
+    end
+
+    private
+
+    def has_binary?(args)
+      args.select {|x| x.is_a?(String)}.any? {|str|
+        str.encoding == Encoding::ASCII_8BIT && !str.ascii_only?
+      }
     end
   end
 end
