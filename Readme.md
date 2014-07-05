@@ -1,6 +1,8 @@
 
 # SocketIO::Emitter
 
+[![Build Status](https://travis-ci.org/nulltask/socket.io-ruby-emitter.svg)](https://travis-ci.org/nulltask/socket.io-ruby-emitter)
+
 A Ruby implementation of [socket.io-emitter](https://github.com/Automattic/socket.io-emitter).
 
 ## How to use
