@@ -14,46 +14,50 @@ module SocketIO
     def initialize(options = {})
       @redis = options[:redis] || Redis.new
       @key = "#{options[:key] || 'socket.io'}#emitter";
+      @nsp = nil
       @rooms = []
       @flags = {}
     end
 
     FLAGS.each do |flag|
-      define_method(flag) do
-        @flags[flag.to_sym] = true
-        self
-      end
+      define_method(flag) { clone.enable_flag(flag) }
     end
 
     def in(room)
-      @rooms << room unless @rooms.include?(room)
-      self
+      clone.add_room(room)
     end
     alias :to :in
 
     def of(nsp)
-      @flags[:nsp] = nsp
-      self
+      clone.select_namespace(nsp)
     end
 
     def emit(*args)
       packet = {}
       packet[:type] = has_binary?(args) ? Type::BINARY_EVENT : Type::EVENT
       packet[:data] = args
-
-      if @flags.has_key?(:nsp)
-        packet[:nsp] = @flags[:nsp]
-        @flags.delete(:nsp)
-      else
-        packet[:nsp] = '/'
-      end
+      packet[:nsp] = @nsp || '/'
 
       packed = MessagePack.pack([packet, { rooms: @rooms, flags: @flags }])
       @redis.publish(@key, packed)
 
-      @rooms.clear
-      @flags.clear
+      self
+    end
 
+    protected
+
+    def add_room(room)
+      @rooms += [room] unless @rooms.include?(room)
+      self
+    end
+
+    def select_namespace(nsp)
+      @nsp = nsp
+      self
+    end
+
+    def enable_flag(flag)
+      @flags = @flags.merge(flag.to_sym => true)
       self
     end
 
