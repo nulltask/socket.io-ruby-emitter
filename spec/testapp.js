@@ -4,6 +4,7 @@ var redis = require('socket.io-redis');
 
 var srv = io(8125);
 srv.adapter(redis({ host: 'localhost', port: 6380 }));
+var nsp = srv.of('/nsp');
 
 var cli = ioc('ws://localhost:8125', {forceNew: true});
 
