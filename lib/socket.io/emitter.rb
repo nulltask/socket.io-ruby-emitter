@@ -38,8 +38,11 @@ module SocketIO
       packet[:data] = args
       packet[:nsp] = @nsp || '/'
 
+      # Add namespace to global pushlish key
+      key = "#{@key}##{@nsq || '/'}#"
+
       packed = MessagePack.pack([packet, { rooms: @rooms, flags: @flags }])
-      @redis.publish(@key, packed)
+      @redis.publish(key, packed)
 
       self
     end
