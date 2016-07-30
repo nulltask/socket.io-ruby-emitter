@@ -23,6 +23,14 @@ describe SocketIO::Emitter do
       end
     end
 
+    it 'should be able to emit messages to room' do
+      emitter.of('/room').to('room').emit('room event', 'room payload')
+
+      timeout(1) do
+        expect($child_io.gets.chomp).to eq 'room payload'
+      end
+    end
+
     it 'should not emit message to all namespace' do
       emitter.of('/nsp').broadcast.emit('nsp broadcast event', 'nsp broadcast payload')
 
@@ -57,7 +65,7 @@ describe SocketIO::Emitter do
       expect(second.instance_variable_get(:@nsp)).to eq "second"
     end
 
-    %i(json volatile broadcast).each do |flag|
+    %w(json volatile broadcast).map(&:to_sym).each do |flag|
       it "builds a new object each time the #{flag} flag is changed" do
         flagged = emitter.send(flag)
 
