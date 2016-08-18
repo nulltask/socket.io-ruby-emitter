@@ -13,10 +13,11 @@ module SocketIO
 
     def initialize(options = {})
       @redis = options[:redis] || Redis.new
-      @key = "#{options[:key] || 'socket.io'}#emitter";
-      @nsp = nil
+      @prefix = "#{options[:key] || 'socket.io'}";
       @rooms = []
       @flags = {}
+      @nsp = nil
+      @uid = 'emitter'
     end
 
     FLAGS.each do |flag|
@@ -38,8 +39,20 @@ module SocketIO
       packet[:data] = args
       packet[:nsp] = @nsp || '/'
 
-      packed = MessagePack.pack([packet, { rooms: @rooms, flags: @flags }])
-      @redis.publish(@key, packed)
+      opts = {}
+      opts[:rooms] = @rooms
+      opts[:flags] = @flags
+
+      chn = "#{@prefix}##{packet[:nsp]}#"
+      msg = MessagePack.pack([@uid, packet, opts])
+      if @rooms && @rooms.length > 0
+        @rooms.each do |room|
+          chn_room = "#{chn}#{room}#"
+          @redis.publish(chn_room, msg)
+        end
+      else
+        @redis.publish(chn, msg)
+      end
 
       self
     end
